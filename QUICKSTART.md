@@ -14,12 +14,12 @@ Ensure you have:
 
 ### Option A: Remote Install (Recommended)
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/carraes/anarchy/main/boot.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/carlosarraes/anarchy/main/boot.sh)
 ```
 
 ### Option B: Manual Install
 ```bash
-git clone https://github.com/carraes/anarchy.git ~/.local/share/anarchy
+git clone https://github.com/carlosarraes/anarchy.git ~/.local/share/anarchy
 cd ~/.local/share/anarchy
 ./install.sh
 ```

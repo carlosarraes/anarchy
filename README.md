@@ -17,10 +17,8 @@ Anarchy is a minimal, fast, and clean Arch Linux distribution configuration that
 ## 🚀 Quick Install
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/carraes/anarchy/main/boot.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/carlosarraes/anarchy/main/boot.sh)
 ```
-
-> **Note**: Replace `carraes/anarchy` with your actual GitHub username/repository when you publish this.
 
 ## 📦 Core Components
 
