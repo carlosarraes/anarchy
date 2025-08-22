@@ -20,6 +20,9 @@ if ! command -v git &>/dev/null; then
 fi
 
 # Configure git for anonymous clones (no auth required)
+export GIT_TERMINAL_PROMPT=0
+export GIT_ASKPASS=true
+git config --global credential.helper ""
 git config --global --unset-all credential.helper 2>/dev/null || true
 
 # Create directory
@@ -47,17 +50,38 @@ if [[ ! -d "$ANARCHY_DIR" ]]; then
     echo "📥 Downloading Anarchy..."
     
     # Try clone with explicit HTTPS and no credential prompting
-    if ! GIT_TERMINAL_PROMPT=0 git clone --depth=1 --branch="$ANARCHY_REF" "$ANARCHY_REPO" "$ANARCHY_DIR" 2>/dev/null; then
-        echo "❌ Failed to clone repository. This might be because:"
-        echo "   1. Repository is private (needs to be public)"
-        echo "   2. Repository doesn't exist"
-        echo "   3. Network connection issues"
-        echo ""
-        echo "🔧 Troubleshooting:"
-        echo "   • Make sure the repository 'carlosarraes/anarchy' exists and is public"
-        echo "   • Check your internet connection"
-        echo "   • Try manual clone: git clone $ANARCHY_REPO"
-        exit 1
+    if ! env GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=true git clone --depth=1 --branch="$ANARCHY_REF" "$ANARCHY_REPO" "$ANARCHY_DIR" 2>/dev/null; then
+        echo "⚠️  Git clone failed, trying alternative download method..."
+        
+        # Fallback: Download via curl + unzip
+        local temp_zip="/tmp/anarchy-main.zip"
+        if curl -fsSL "https://github.com/carlosarraes/anarchy/archive/refs/heads/main.zip" -o "$temp_zip"; then
+            echo "📥 Downloading via ZIP archive..."
+            if command -v unzip &>/dev/null; then
+                unzip -q "$temp_zip" -d /tmp/
+                mv "/tmp/anarchy-main" "$ANARCHY_DIR"
+                rm "$temp_zip"
+                echo "✓ Download successful via ZIP"
+            else
+                echo "❌ unzip command not found. Installing..."
+                sudo pacman -Sy --noconfirm unzip
+                unzip -q "$temp_zip" -d /tmp/
+                mv "/tmp/anarchy-main" "$ANARCHY_DIR"
+                rm "$temp_zip"
+                echo "✓ Download successful via ZIP"
+            fi
+        else
+            echo "❌ All download methods failed. This might be because:"
+            echo "   1. Repository is private (needs to be public)"
+            echo "   2. Repository doesn't exist"
+            echo "   3. Network connection issues"
+            echo ""
+            echo "🔧 Troubleshooting:"
+            echo "   • Make sure the repository 'carlosarraes/anarchy' exists and is public"
+            echo "   • Check your internet connection"
+            echo "   • Try manual clone: git clone $ANARCHY_REPO"
+            exit 1
+        fi
     fi
     
     cd "$ANARCHY_DIR"
