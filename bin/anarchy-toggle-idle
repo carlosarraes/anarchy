@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# 🏴‍☠️ Anarchy Idle Toggle
+# Toggle idle lock on/off
+
+if pgrep -x "hypridle" > /dev/null; then
+    # Hypridle is running, kill it
+    pkill hypridle
+    notify-send "Idle Lock" "Disabled" --icon=security-low
+    echo "Idle lock disabled"
+else
+    # Hypridle is not running, start it
+    hypridle &
+    notify-send "Idle Lock" "Enabled" --icon=security-high
+    echo "Idle lock enabled"
+fi

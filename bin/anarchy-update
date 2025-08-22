@@ -1,0 +1,108 @@
+#!/bin/bash
+
+# 🏴‍☠️ Anarchy Update Script
+# Update Anarchy installation and packages
+
+set -e
+
+ANARCHY_DIR="$HOME/.local/share/anarchy"
+LOG_FILE="$HOME/.local/state/anarchy/update.log"
+
+# Logging function
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $*" >> "$LOG_FILE"
+    echo "$@"
+}
+
+main() {
+    echo "🏴‍☠️ Anarchy Update"
+    echo "=================="
+    echo ""
+    
+    # Create log directory
+    mkdir -p "$(dirname "$LOG_FILE")"
+    log "Starting Anarchy update"
+    
+    # Update Anarchy repository
+    if [[ -d "$ANARCHY_DIR/.git" ]]; then
+        echo "📥 Updating Anarchy repository..."
+        cd "$ANARCHY_DIR"
+        git fetch origin
+        local current_commit=$(git rev-parse HEAD)
+        git reset --hard origin/main
+        local new_commit=$(git rev-parse HEAD)
+        
+        if [[ "$current_commit" != "$new_commit" ]]; then
+            log "Updated Anarchy: $current_commit -> $new_commit"
+            echo "✓ Anarchy repository updated"
+        else
+            echo "✓ Anarchy repository is up to date"
+        fi
+    else
+        echo "⚠️  Anarchy repository not found, skipping update"
+    fi
+    
+    # Run migrations if any
+    if [[ -f "$ANARCHY_DIR/bin/anarchy-migrate" ]]; then
+        echo ""
+        echo "🔄 Running migrations..."
+        "$ANARCHY_DIR/bin/anarchy-migrate"
+    fi
+    
+    # Update system packages
+    echo ""
+    echo "📦 Updating system packages..."
+    sudo pacman -Syu --noconfirm
+    
+    # Update AUR packages
+    if command -v yay &>/dev/null; then
+        echo ""
+        echo "📦 Updating AUR packages..."
+        yay -Sua --noconfirm
+    fi
+    
+    # Clean package cache
+    echo ""
+    echo "🧹 Cleaning package cache..."
+    sudo pacman -Sc --noconfirm
+    
+    # Update configuration if needed
+    echo ""
+    echo "⚙️  Refreshing configurations..."
+    if [[ -f "$ANARCHY_DIR/core/config.sh" ]]; then
+        source "$ANARCHY_DIR/core/config.sh"
+        deploy_configurations
+    fi
+    
+    echo ""
+    echo "🎉 Update completed successfully!"
+    echo "📋 Log file: $LOG_FILE"
+    
+    log "Anarchy update completed successfully"
+    
+    # Ask to restart if needed
+    if command -v gum &>/dev/null; then
+        if gum confirm "Restart Hyprland to apply all changes?"; then
+            hyprctl dispatch exit
+        fi
+    else
+        echo ""
+        echo -n "Restart Hyprland to apply all changes? (y/N): "
+        read -r response
+        if [[ "$response" =~ ^[Yy] ]]; then
+            hyprctl dispatch exit
+        fi
+    fi
+}
+
+# Error handling
+error_exit() {
+    log "ERROR: $1"
+    echo "❌ Update failed: $1"
+    echo "📋 Check log file: $LOG_FILE"
+    exit 1
+}
+
+trap 'error_exit "Update interrupted"' INT TERM
+
+main "$@"

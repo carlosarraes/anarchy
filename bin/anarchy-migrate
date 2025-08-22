@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# 🏴‍☠️ Anarchy Migration System
+# Runs pending migrations to update system
+
+ANARCHY_DIR="$HOME/.local/share/anarchy"
+MIGRATIONS_DIR="$ANARCHY_DIR/migrations"
+STATE_DIR="$HOME/.local/state/anarchy/migrations"
+LOG_FILE="$HOME/.local/state/anarchy/migrate.log"
+
+# Logging function
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $*" >> "$LOG_FILE"
+    echo "$@"
+}
+
+# Create state directory
+mkdir -p "$STATE_DIR"
+mkdir -p "$(dirname "$LOG_FILE")"
+
+main() {
+    log "Starting migration check"
+    
+    if [[ ! -d "$MIGRATIONS_DIR" ]]; then
+        log "No migrations directory found"
+        return 0
+    fi
+    
+    local migrations_run=0
+    
+    # Find and run pending migrations
+    for migration_file in "$MIGRATIONS_DIR"/*.sh; do
+        [[ ! -f "$migration_file" ]] && continue
+        
+        local migration_name=$(basename "$migration_file" .sh)
+        local state_file="$STATE_DIR/$migration_name"
+        
+        # Skip if already run
+        if [[ -f "$state_file" ]]; then
+            continue
+        fi
+        
+        log "Running migration: $migration_name"
+        echo "🔄 Running migration: $migration_name"
+        
+        # Source and run migration
+        if source "$migration_file"; then
+            # Mark as completed
+            touch "$state_file"
+            log "Migration completed: $migration_name"
+            echo "✓ Migration completed: $migration_name"
+            ((migrations_run++))
+        else
+            log "Migration failed: $migration_name"
+            echo "❌ Migration failed: $migration_name"
+            return 1
+        fi
+    done
+    
+    if [[ $migrations_run -eq 0 ]]; then
+        echo "✓ No pending migrations"
+    else
+        echo "✓ Completed $migrations_run migrations"
+    fi
+    
+    log "Migration check completed"
+}
+
+main "$@"

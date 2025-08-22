@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# 🏴‍☠️ Anarchy Power Menu
+# System power management interface
+
+if command -v gum &>/dev/null; then
+    # Use gum for modern interface
+    choice=$(gum choose --header="🔋 Power Options" \
+        "Lock Screen" \
+        "Logout" \
+        "Suspend" \
+        "Restart" \
+        "Shutdown" \
+        "Cancel")
+    
+    case "$choice" in
+        "Lock Screen")
+            hyprlock ;;
+        "Logout")
+            hyprctl dispatch exit ;;
+        "Suspend")
+            systemctl suspend ;;
+        "Restart")
+            systemctl reboot ;;
+        "Shutdown")
+            systemctl poweroff ;;
+        "Cancel"|"")
+            exit 0 ;;
+    esac
+else
+    # Fallback to wofi
+    choice=$(echo -e "Lock Screen\nLogout\nSuspend\nRestart\nShutdown" | wofi --dmenu --prompt="Power")
+    
+    case "$choice" in
+        "Lock Screen")
+            hyprlock ;;
+        "Logout")
+            hyprctl dispatch exit ;;
+        "Suspend")
+            systemctl suspend ;;
+        "Restart")
+            systemctl reboot ;;
+        "Shutdown")
+            systemctl poweroff ;;
+    esac
+fi

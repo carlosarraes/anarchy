@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# 🏴‍☠️ Anarchy Nightlight Toggle
+# Toggle blue light filter using hyprsunset
+
+if pgrep -x "hyprsunset" > /dev/null; then
+    # Hyprsunset is running, kill it
+    pkill hyprsunset
+    notify-send "Night Light" "Disabled" --icon=weather-clear-night
+    echo "Night light disabled"
+else
+    # Hyprsunset is not running, start it with warm temperature
+    hyprsunset -t 4500 &
+    notify-send "Night Light" "Enabled (4500K)" --icon=weather-clear-night
+    echo "Night light enabled (4500K)"
+fi

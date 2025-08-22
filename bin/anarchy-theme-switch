@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# 🏴‍☠️ Anarchy Theme Switcher
+# Switch between available themes
+
+THEMES_DIR="$HOME/.local/share/anarchy/config/themes"
+CURRENT_THEME_FILE="$HOME/.config/anarchy/current_theme"
+
+# Available themes
+themes=("catppuccin" "gruvbox" "nord" "everforest" "tokyo-night")
+
+if command -v gum &>/dev/null; then
+    # Use gum for modern interface
+    current_theme=""
+    if [[ -f "$CURRENT_THEME_FILE" ]]; then
+        current_theme=$(cat "$CURRENT_THEME_FILE")
+    fi
+    
+    gum style --foreground="#89CFF0" --bold "🎨 Current theme: $current_theme"
+    echo ""
+    
+    choice=$(gum choose --header="Select new theme:" "${themes[@]}")
+    
+    if [[ -n "$choice" && "$choice" != "$current_theme" ]]; then
+        echo "$choice" > "$CURRENT_THEME_FILE"
+        gum style --foreground="#50C878" "✓ Theme changed to: $choice"
+        gum style --foreground="#D3D3D3" "Restart Hyprland to apply changes"
+    fi
+else
+    # Fallback to wofi
+    choice=$(printf '%s\n' "${themes[@]}" | wofi --dmenu --prompt="Select Theme")
+    
+    if [[ -n "$choice" ]]; then
+        echo "$choice" > "$CURRENT_THEME_FILE"
+        notify-send "Theme Changed" "Theme set to: $choice\nRestart Hyprland to apply"
+    fi
+fi

@@ -1,0 +1,62 @@
+# 🏴‍☠️ Anarchy Mako Configuration
+# Notification daemon configuration
+
+# Style
+font=CascadiaCode Nerd Font 12
+background-color=#1e1e2e
+text-color=#cdd6f4
+border-color=#89b4fa
+border-size=2
+border-radius=8
+padding=10
+margin=8
+
+# Behavior
+sort=-time
+layer=overlay
+max-visible=5
+default-timeout=5000
+ignore-timeout=0
+
+# Positioning
+anchor=top-right
+width=400
+height=150
+
+# Icons
+icon-path=/usr/share/icons/Yaru
+max-icon-size=48
+
+# Grouping
+group-by=app-name
+
+# History
+history=1
+max-history=50
+
+# Actions
+actions=1
+
+# Urgency levels
+[urgency=low]
+border-color=#94e2d5
+default-timeout=3000
+
+[urgency=normal]
+border-color=#89b4fa
+default-timeout=5000
+
+[urgency=critical]
+border-color=#f38ba8
+default-timeout=0
+text-color=#ffffff
+background-color=#f38ba8
+
+# App-specific settings
+[app-name=volume]
+default-timeout=1000
+group-by=none
+
+[app-name=brightness]
+default-timeout=1000
+group-by=none

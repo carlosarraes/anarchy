@@ -1,0 +1,66 @@
+/* 🏴‍☠️ Anarchy Wofi Styling */
+
+window {
+    margin: 0px;
+    border: 2px solid #89b4fa;
+    border-radius: 10px;
+    background-color: rgba(30, 30, 46, 0.95);
+    font-family: "CascadiaCode Nerd Font";
+    font-size: 14px;
+}
+
+#input {
+    margin: 8px;
+    padding: 8px;
+    border: 1px solid #45475a;
+    border-radius: 6px;
+    background-color: #313244;
+    color: #cdd6f4;
+    font-size: 14px;
+}
+
+#input:focus {
+    border-color: #89b4fa;
+    outline: none;
+}
+
+#inner-box {
+    margin: 5px;
+    border: none;
+    background-color: transparent;
+}
+
+#outer-box {
+    margin: 5px;
+    border: none;
+    background-color: transparent;
+}
+
+#scroll {
+    margin: 0px;
+    border: none;
+}
+
+#text {
+    margin: 5px;
+    border: none;
+    color: #cdd6f4;
+    font-size: 14px;
+}
+
+#entry {
+    border: none;
+    border-radius: 6px;
+    margin: 2px;
+    padding: 8px;
+    background-color: transparent;
+}
+
+#entry:selected {
+    background-color: rgba(137, 180, 250, 0.2);
+    border: 1px solid #89b4fa;
+}
+
+#text:selected {
+    color: #89b4fa;
+}
